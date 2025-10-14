@@ -243,6 +243,11 @@ xMBPortTCPPool( void )
         {
             if( FD_ISSET( xClientSocket, &fread ) )
             {
+                if (usTCPFrameBytesLeft > MB_TCP_BUF_SIZE) {//Received PDU exceeds the maximum size: 256 + 7 bytes
+                    close(xClientSocket);
+                    xClientSocket = INVALID_SOCKET;
+                    return TRUE;
+                }
                 if( ( ( ret =
                         recv( xClientSocket, &aucTCPBuf[usTCPBufPos], usTCPFrameBytesLeft,
                               0 ) ) == SOCKET_ERROR ) || ( !ret ) )
